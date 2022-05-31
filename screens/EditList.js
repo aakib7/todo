@@ -3,7 +3,7 @@ import React,{useState} from 'react'
 import { CommonActions } from '@react-navigation/native';
 import Colors from '../constants/Colors';
 import ColorSelector from '../components/ColorSelector';
-
+import Button from '../components/Button';
 const colorList = [
     "blue",
     "teal",
@@ -51,7 +51,8 @@ const EditList = ({navigation,route}) =>{
                     colorOption = {colorList}
                     />
             </View>
-            <TouchableOpacity 
+            <Button 
+                text={"Save"}
                 onPress={()=>{
                     if(title.length>1){
                         route.params.saveChanges({title,color});
@@ -59,10 +60,8 @@ const EditList = ({navigation,route}) =>{
                     }else{
                         setValidity(false)
                     }
-                }} 
-                style={styles.saveButton}>
-                <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
+                }}
+                />
             
         </SafeAreaView>
     );
