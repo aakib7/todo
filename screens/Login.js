@@ -4,8 +4,12 @@ import Colors from '../constants/Colors'
 import validator from "validator";
 import Button from '../components/Button';
 import LabeledInput from '../components/LabeledInput';
-import { auth } from '../config';
+import { auth,db } from '../config';
 import { createUserWithEmailAndPassword,signInWithEmailAndPassword } from 'firebase/auth';
+import { collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc,Timestamp } from "firebase/firestore"; 
+
+
 const validateFields = (email, password) => {
     const isValid = {
         email: validator.isEmail(email),
@@ -36,10 +40,22 @@ const Login = () => {
         text:"",
         errorMessage:""
     });
+    const [userName,setUserName] = useState("")
 
     const createAccount = (email,password) =>{
         createUserWithEmailAndPassword(auth,email,password).then(({user})=>{
             console.log("Creating user ...")
+            // addDoc(collection(db, "users"),user.uid, {});
+            // in firestore a users collection is created and 
+            // a document with same user id that is in auth
+            setDoc(doc(db, "users", user.uid), {
+                //pass any data for user{user.uid}
+                user_name:userName,
+                address:"Lahore",
+                phone:"0300",
+                // date: Timestamp.fromDate(new Date()),
+                // date: Timestamp.fromDate(new Date("December 10, 1815")),
+            });
         })
     }
     const login = (email,password) =>{
@@ -69,7 +85,17 @@ const Login = () => {
                 errorMessage={emailFeild.errorMessage}
                 labelStyle={styles.label}
                 autoCompleteType={"email"}
-            />            
+            />             
+            {/* user name only for reg             */}
+
+            {isCreateMode && <LabeledInput 
+                lable={"User Name"} 
+                text={userName}
+                onChangeText={(text)=>{setUserName(text)}}
+                labelStyle={styles.label}
+            />}
+
+
             {/* password input */}
             <LabeledInput 
                 lable={"Password"} 
