@@ -3,12 +3,12 @@ import React from 'react'
 import Colors from '../constants/Colors';
 import { Ionicons } from "@expo/vector-icons"
 
-const ListButton = ({title,color,navigation,onDelete,onOptions}) => {
+const ListButton = ({title,color,listId,navigation,onDelete,onOptions}) => {
     
     return(
         <TouchableOpacity 
             // pass params to the next screen. and pass as props to the next screen(ToDoList) in main navigation stack
-        onPress={()=>{navigation.navigate("ToDoList",{title:title,color:color})}} 
+        onPress={()=>{navigation.navigate("ToDoList",{title:title,color:color,listId:listId})}} 
         style={[styles.itemContainer,{backgroundColor:color}]}>
             <View>
                 <Text style={styles.itemTitle}>{title}</Text>

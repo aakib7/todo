@@ -1,10 +1,12 @@
 import { View, Text,StyleSheet,SafeAreaView,TouchableOpacity,FlatList } from 'react-native'
-import React,{useLayoutEffect,useState} from 'react'
+import React,{useLayoutEffect,useState,useEffect} from 'react'
 import Colors from '../constants/Colors';
 import { Ionicons } from "@expo/vector-icons"
 import ListButton from '../components/ListButton';
 import AddListIcon from '../components/AddListIcon';
-
+import { doc, setDoc,collection } from "firebase/firestore";
+import {db,auth} from '../config';
+import {getData,addDoc,removeDoc,updateDoc} from '../services/collection'
 
 // Components 
 // const ListButton = (props) => {
@@ -42,21 +44,54 @@ import AddListIcon from '../components/AddListIcon';
 
 const Home = ({navigation}) => {
     const [items,setItem] = useState([]);
+    const listRef = collection(db, `users/${auth.currentUser.uid}/lists`);
     
+    // get real time data
+    useEffect(() => {
+        getData(
+            listRef,
+            (newLists) => {
+                setItem(newLists);
+            },
+            {
+                sort: (a, b) => {
+                    if (a.index < b.index) {
+                        return -1;
+                    }
+                    if (a.index > b.index) {
+                        return 1;
+                    }
+                    return 0;
+                },
+            }
+        );
+    }, []);
+
+
+
+
+
     // adding a new item
-    const addItemToList = (item) => {
-        setItem([...items,item]);
+    const addItemToList = ({ title, color }) => {
+        console.log("Adding new Data"+items.length)
+        const index = items.length > 1 ? items[items.length - 1].index : 0;
+        // console.log(parseInt(index+!))
+        addDoc(listRef, { title, color, index });
     }
 
     // deleting an item
     const deleteItemFromList = (id) => {
-        items.splice(id,1);
-        setItem([...items]);
+        // items.splice(id,1);
+        // setItem([...items]);
+        console.log("Deleting Data")
+        removeDoc(listRef,id);
     }
     // update item
-    const updateItemFromList = (index,item)=>{
-        items[index] = item;
-        setItem([...items])
+    const updateItemFromList = (id,item)=>{
+        // items[index] = item;
+        // setItem([...items])
+        console.log("Updating Data")
+        updateDoc(listRef,id,item);
     }
     useLayoutEffect(()=>{
         navigation.setOptions({
@@ -72,20 +107,21 @@ const Home = ({navigation}) => {
         <FlatList
             data={items}
             // destracture the data into item, and than destracture item into title and color
-            renderItem={({item:{title,color},index})=>{
+            renderItem={({item:{title,color,id},index})=>{
                 return(
                     <ListButton 
                         title={title} 
                         color={color}
+                        listId={id}
                         onOptions={()=>{
                             navigation.navigate("Edit",
                             {
                                 title:title,
                                 color:color,
-                                saveChanges:(item)=>updateItemFromList(index,item)
+                                saveChanges:(item)=>updateItemFromList(id,item)
                             })}} 
                         navigation={navigation}
-                        onDelete={()=>deleteItemFromList(index)}
+                        onDelete={()=>deleteItemFromList(id)}
                         // onDelete={()=>deleteItemFromList(index)}
                     />
                 );

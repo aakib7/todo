@@ -7,14 +7,15 @@ import CheckBox from './CheckBox';
 
 
 
-const TodoItem = ({text,isChecked,onChecked,onChangeText,onDelete,isNewItem}) => {
+const TodoItem = ({text,isChecked,onChecked,onChangeText,onDelete,onBlur,...props}) => {
     
   return (
     <SafeAreaView style={styles.container}>
         {/* Check box and text here */}
         <View style={{ flexDirection: "row", flex: 1 ,marginVertical:9}}>
             <CheckBox isChecked={isChecked} onChecked={onChecked}/>
-            <EditableText text={text} isChecked={isChecked} isNewItem={isNewItem} onChangeText={onChangeText}/>
+            <EditableText text={text} isChecked={isChecked} {...props}
+                        onChangeText={onChangeText} onBlur={onBlur}/>
         </View>
         <TouchableOpacity onPress={onDelete}>
             <Text style={[styles.icon,{color:Colors.red}]}>X</Text>
@@ -58,8 +59,8 @@ const styles = StyleSheet.create({
 })
 
 // Components
-const EditableText =({text,isChecked,isNewItem,onChangeText})=>{
-    const [isEditabled,setIsEditabled] = useState(isNewItem);
+const EditableText =({text,isChecked,onChangeText,...props})=>{
+    const [isEditabled,setIsEditabled] = useState(props.new);
     return( 
         <TouchableOpacity 
         style={{flex:1}}
@@ -76,7 +77,10 @@ const EditableText =({text,isChecked,isNewItem,onChangeText})=>{
                 onSubmitEditing={()=>{}}
                 maxLength={30}
                 style={[styles.input,{outline:"none"}]}
-                onBlur={()=>{setIsEditabled(false)}} // on blur when text is not focuesd
+                onBlur={()=>{
+                    props.onBlur && props.onBlur()
+                    setIsEditabled(false)
+                }} // on blur when text is not focuesd
             />:
             <Text style={
                 [   
