@@ -6,8 +6,7 @@ import Button from '../components/Button';
 import LabeledInput from '../components/LabeledInput';
 import { auth,db } from '../config';
 import { createUserWithEmailAndPassword,signInWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc } from 'firebase/firestore';
-import { doc, setDoc,Timestamp } from "firebase/firestore"; 
+import {setDoc,doc } from "firebase/firestore"; 
 
 
 const validateFields = (email, password) => {
@@ -44,27 +43,9 @@ const Login = () => {
 
     const createAccount =  (email,password) =>{
          createUserWithEmailAndPassword(auth,email,password).then(({user})=>{
-            // console.log("Creating user ...")
-            // console.log("auth"+auth.currentUser.uid)
-            // console.log(user)
-            // console.log(user.uid)
-
-
-            // addDoc(collection(db, "users"),user.uid, {});
-            // in firestore a users collection is created and 
-            // a document with same user id that is in auth
-            // const ref = collection(db, );
-            
-            // await setDoc(doc(db,`users/${auth.currentUser.uid}`,"task"), {
-            //     //pass any data for user{user.uid}
-            //     user_name:userName,
-            //     address:"Lahore",
-            //     phone:"0300",
-            //     // date: Timestamp.fromDate(new Date()),
-            //     // date: Timestamp.fromDate(new Date("December 10, 1815")),
-            // });
-
-            
+            setDoc(doc(db,'users',user.uid),{
+                user_name:userName,
+            })
         })
     }
     const login = (email,password) =>{
